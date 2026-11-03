@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Late Night Cafe | Rank Store</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#100f19;color:#f7f4ff;font-family:Arial,sans-serif}
+main{max-width:950px;margin:auto;padding:25px 16px}
+header{text-align:center;padding:35px 10px;border-bottom:1px solid #373149}
+header h1{color:#bd9cff;letter-spacing:3px}
+header p,.muted{color:#aaa4bd}
+h2{margin-top:30px}
+.ranks{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.rank{background:#211e30;border:1px solid #373149;border-radius:14px;padding:18px;color:white;text-align:left;cursor:pointer}
+.rank.selected{border:2px solid #a987f5;background:#302849}
+.rank h3{margin:8px 0}
+.price{font-size:20px;font-weight:bold;color:#c7b1ff}
+.panel{margin-top:22px;background:#191725;border:1px solid #373149;border-radius:15px;padding:20px}
+label{display:block;margin:16px 0 7px}
+input,select{width:100%;padding:13px;background:#100f19;color:white;border:1px solid #49415d;border-radius:9px}
+button.submit{width:100%;padding:14px;margin-top:20px;background:#9671e5;color:white;border:0;border-radius:10px;font-weight:bold;font-size:15px}
+.summary{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #373149}
+#message{color:#c7b1ff;line-height:1.5}
+.notice{background:#29223b;padding:12px;border-radius:10px;color:#cfc3e9;font-size:12px;line-height:1.6}
+footer{text-align:center;color:#888;margin-top:30px;font-size:12px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>☕ LATE NIGHT CAFE</h1>
+<p>MINECRAFT RPG • RANK STORE</p>
+</header>
+
+<h2>Chọn Rank</h2>
+<p class="muted">Tất cả Rank đều sở hữu vĩnh viễn.</p>
+
+<section class="ranks" id="ranks">
+<button class="rank selected" data-name="Đồng" data-price="10000">🥉<h3>ĐỒNG</h3><div class="price">10.000đ</div></button>
+<button class="rank" data-name="Vàng" data-price="20000">🥇<h3>VÀNG</h3><div class="price">20.000đ</div></button>
+<button class="rank" data-name="Bạch Kim" data-price="40000">💠<h3>BẠCH KIM</h3><div class="price">40.000đ</div></button>
+<button class="rank" data-name="Kim Cương" data-price="100000">💎<h3>KIM CƯƠNG</h3><div class="price">100.000đ</div></button>
+<button class="rank" data-name="Tinh Anh" data-price="200000">👑<h3>TINH ANH</h3><div class="price">200.000đ</div></button>
+</section>
+
+<section class="panel">
+<h2>Thông tin người mua</h2>
+<label>Tên Minecraft</label>
+<input id="player" maxlength="16" placeholder="Nhập tên trong game">
+
+<label>Rank hiện tại</label>
+<select id="current">
+<option value="0">Chưa có Rank</option>
+<option value="10000">Đồng</option>
+<option value="20000">Vàng</option>
+<option value="40000">Bạch Kim</option>
+<option value="100000">Kim Cương</option>
+<option value="200000">Tinh Anh</option>
+</select>
+
+<h2>Đơn hàng</h2>
+<div class="summary"><span>Rank muốn mua</span><b id="chosen">Đồng</b></div>
+<div class="summary"><span>Giá Rank</span><b id="price">10.000đ</b></div>
+<div class="summary"><span>Tiền nâng cấp</span><b id="total">10.000đ</b></div>
+
+<button class="submit" id="order">TẠO ĐƠN HÀNG</button>
+<p id="message"></p>
+<div class="notice">Bản giao diện thử nghiệm. Thanh toán MB Bank, xác nhận giao dịch và cấp Rank tự động chưa được kết nối. Không chuyển tiền ở bước này.</div>
+</section>
+
+<footer>© 2026 LATE NIGHT CAFE</footer>
+</main>
+
+<script>
+const cards=[...document.querySelectorAll('.rank')];
+const current=document.querySelector('#current');
+let selected=cards[0];
+
+const money=n=>new Intl.NumberFormat('vi-VN').format(n)+'đ';
+
+function update(){
+ const price=Number(selected.dataset.price);
+ const old=Number(current.value);
+ document.querySelector('#chosen').textContent=selected.dataset.name;
+ document.querySelector('#price').textContent=money(price);
+ document.querySelector('#total').textContent=money(Math.max(0,price-old));
+}
+cards.forEach(card=>card.addEventListener('click',()=>{
+ cards.forEach(c=>c.classList.remove('selected'));
+ card.classList.add('selected');
+ selected=card;
+ update();
+}));
+current.addEventListener('change',update);
+
+document.querySelector('#order').addEventListener('click',()=>{
+ const player=document.querySelector('#player').value.trim();
+ const old=Number(current.value);
+ const price=Number(selected.dataset.price);
+ const message=document.querySelector('#message');
+
+ if(!/^[A-Za-z0-9_]{3,16}$/.test(player)){
+  message.textContent='Tên Minecraft không hợp lệ!';
+  return;
+ }
+ if(price<=old){
+  message.textContent='M đã sở hữu Rank này hoặc Rank cao hơn.';
+  return;
+ }
+ message.textContent='Đơn xem trước: '+player+' mua '+selected.dataset.name+'. Số tiền: '+money(price-old)+'. Chưa có thanh toán thật.';
+});
+update();
+</script>
+</body>
+</html>
